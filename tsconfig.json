@@ -1,10 +1,10 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "sourceMap": true
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "outFile": "root/js/mainFunctions.js",
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
