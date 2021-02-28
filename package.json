@@ -1,11 +1,14 @@
 {
   "name": "algorithmVisualizer",
   "version": "1.0.0",
+  "main": "root/js/mainFunctions.js",
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.6.0",
-    "jquery": "^3.5.1"
+    "jquery": "^3.5.1",
+    "pixi.js": "^5.3.8",
+    "systemjs": "^6.8.3"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.5"
+    "@types/jquery": "^3.5.5",
+    "webpack": "^5.24.2"
   }
 }

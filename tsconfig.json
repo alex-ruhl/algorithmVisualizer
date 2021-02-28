@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES6",
     "outFile": "root/js/mainFunctions.js",
-    "sourceMap": true
+    "sourceMap": true,
   },
-  "exclude": [
-    "node_modules"
+  "include": [
+    "typescript/*",
+    "node_modules/@types/jquery/misc.d.ts",
+    "node_modules/pixi.js/pixi.js.d.ts"
   ]
 }
