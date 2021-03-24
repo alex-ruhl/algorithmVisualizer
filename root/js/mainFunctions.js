@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 // Application
 let width = 640, height = 480;
 let app = new PIXI.Application({
@@ -16,44 +25,33 @@ let renderer = new PIXI.Renderer({
 });
 let stage = new PIXI.Container();
 let array;
+let currentIndex;
+let sorted = false;
 // setup RAF
 let oldTime = Date.now();
 let index = 0;
-let switches = false;
 let run = false;
 function setup() {
     renderer.autoDensity = true;
     renderer.backgroundColor = 0x333333;
     $('#stage').html(renderer.view);
-    array = createArray(32, height / 32);
-    array = shuffle(array);
-    addBars(array, width / 32, index);
+    array = createArray(31);
+    addBars(array, width / 32, [index]);
     renderer.render(stage);
 }
-function createArray(length, step) {
-    let array = [];
-    let value = step;
-    for (let i = 0; i < length; i++) {
-        array.push(value);
-        value += step;
+function createArray(length) {
+    let arr = [];
+    while (arr.length < length) {
+        let r = Math.floor(Math.random() * 450) + 10;
+        if (arr.indexOf(r) === -1)
+            arr.push(r);
     }
-    return array;
+    return arr;
 }
-function shuffle(array) {
-    let currentIndex = array.length, temporaryValue, randomIndex;
-    while (0 !== currentIndex) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-    return array;
-}
-function addBars(array, step, focus) {
+function addBars(array, step, focus, toChange = false) {
     for (let i = 0; i < array.length; i++) {
-        if (i == focus) {
-            stage.addChild(drawBar((i * step + i) + step / 2, array[i], 0xFF0000));
+        if (focus.includes(i)) {
+            stage.addChild(drawBar((i * step + i) + step / 2, array[i], toChange ? 0xFF7879 : 0xFF0000));
         }
         else {
             stage.addChild(drawBar((i * step + i) + step / 2, array[i]));
@@ -71,11 +69,11 @@ function drawBar(offset, length, color = 0xFFFFFF) {
 function animate() {
     let newTime = Date.now();
     let deltaTime = newTime - oldTime;
-    if (deltaTime > 90) {
-        oldTime = newTime;
-        if (run) {
+    if (run) {
+        if (deltaTime > 90) {
+            oldTime = newTime;
             renderer.clear();
-            addBars(array, width / 32, index < 30 ? ++index : index = 0);
+            //addBars(array, width/32, index < 30 ? ++index : index = 0);
             renderer.render(stage);
         }
     }
@@ -83,10 +81,54 @@ function animate() {
 }
 $(function () {
     setup();
+    $(".nav-link").on("click", function () {
+        $(".nav-masthead").children(".active").removeClass("active");
+        $(this).addClass("active");
+    });
 });
 function startSort() {
-    $("#startStop").html(!run ? "Stop" : "Start");
-    run = !run;
-    requestAnimationFrame(animate);
+    $("#startStop").prop({ disabled: true });
+    bubbleSort(array).then(function () {
+        $("#startStop").prop({ disabled: false });
+    });
+}
+function bubbleSort(array) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < array.length - 1; i++) {
+            for (let j = 0; j < array.length - i - 1; j++) {
+                let a = [];
+                a.push(j), a.push(j + 1);
+                yield delay(115);
+                for (let k = stage.children.length - 1; k >= 0; k--) {
+                    stage.removeChild(stage.children[k]);
+                }
+                ;
+                addBars(array, width / 32, a, true);
+                renderer.render(stage);
+                if (array[j] > array[j + 1]) {
+                    a = [];
+                    let tmp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = tmp;
+                    a.push(j), a.push(j + 1);
+                    yield delay(115);
+                    for (let k = stage.children.length - 1; k >= 0; k--) {
+                        stage.removeChild(stage.children[k]);
+                    }
+                    ;
+                    addBars(array, width / 32, a);
+                    renderer.render(stage);
+                    yield delay(115);
+                }
+            }
+        }
+    });
+}
+function delay(delayInms) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(2);
+        }, delayInms);
+    });
 }
 //# sourceMappingURL=mainFunctions.js.map
