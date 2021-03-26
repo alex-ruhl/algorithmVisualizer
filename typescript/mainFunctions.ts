@@ -64,20 +64,6 @@ function drawBar(offset: number, length: number, color: number = 0xFFFFFF) {
     return bar;
 }
 
-function animate() {
-    let newTime = Date.now();
-    let deltaTime = newTime - oldTime;
-    if (run) {
-        if (deltaTime > 90) {
-            oldTime = newTime;
-            renderer.clear();
-            //addBars(array, width/32, index < 30 ? ++index : index = 0);
-            renderer.render(stage);
-        }
-    }
-    requestAnimationFrame(animate);
-}
-
 $(function() {
     setup();
     $(".nav-link").on("click", function () {
@@ -87,19 +73,25 @@ $(function() {
 });
 
 function startSort() {
-    $("#startStop").prop({disabled: true});
+    $("#start, #reset").prop({disabled: true});
     bubbleSort(array).then(function () {
-        $("#startStop").prop({disabled: false});
+        $("#start, #reset").prop({disabled: false});
     });
+}
+
+function reset() {
+    clearStage();
+    setup();
 }
 
 async function bubbleSort(array: number[]) {
     for (let i = 0; i < array.length - 1; i++) {
         for (let j = 0; j < array.length - i - 1; j++) {
             let a: number[] = [];
-            a.push(j), a.push(j+1);
+            a.push(j);
+            a.push(j+1);
             await delay(115);
-            for (let k = stage.children.length - 1; k >= 0; k--) {	stage.removeChild(stage.children[k]);};
+            clearStage();
             addBars(array, width/32, a, true);
             renderer.render(stage);
             if (array[j] > array[j+1]) {
@@ -107,15 +99,20 @@ async function bubbleSort(array: number[]) {
                 let tmp = array[j];
                 array[j] = array[j+1];
                 array[j+1] = tmp;
-                a.push(j), a.push(j+1);
+                a.push(j);
+                a.push(j+1);
                 await delay(115);
-                for (let k = stage.children.length - 1; k >= 0; k--) {	stage.removeChild(stage.children[k]);};
+                clearStage();
                 addBars(array, width/32, a);
                 renderer.render(stage);
                 await delay(115);
             }
         }
     }
+}
+
+function clearStage() {
+    for (let k = stage.children.length - 1; k >= 0; k--) {	stage.removeChild(stage.children[k]); }
 }
 
 function delay(delayInms) {

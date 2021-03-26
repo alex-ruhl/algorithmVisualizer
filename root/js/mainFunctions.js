@@ -66,19 +66,6 @@ function drawBar(offset, length, color = 0xFFFFFF) {
     bar.x = offset;
     return bar;
 }
-function animate() {
-    let newTime = Date.now();
-    let deltaTime = newTime - oldTime;
-    if (run) {
-        if (deltaTime > 90) {
-            oldTime = newTime;
-            renderer.clear();
-            //addBars(array, width/32, index < 30 ? ++index : index = 0);
-            renderer.render(stage);
-        }
-    }
-    requestAnimationFrame(animate);
-}
 $(function () {
     setup();
     $(".nav-link").on("click", function () {
@@ -87,22 +74,24 @@ $(function () {
     });
 });
 function startSort() {
-    $("#startStop").prop({ disabled: true });
+    $("#start, #reset").prop({ disabled: true });
     bubbleSort(array).then(function () {
-        $("#startStop").prop({ disabled: false });
+        $("#start, #reset").prop({ disabled: false });
     });
+}
+function reset() {
+    clearStage();
+    setup();
 }
 function bubbleSort(array) {
     return __awaiter(this, void 0, void 0, function* () {
         for (let i = 0; i < array.length - 1; i++) {
             for (let j = 0; j < array.length - i - 1; j++) {
                 let a = [];
-                a.push(j), a.push(j + 1);
+                a.push(j);
+                a.push(j + 1);
                 yield delay(115);
-                for (let k = stage.children.length - 1; k >= 0; k--) {
-                    stage.removeChild(stage.children[k]);
-                }
-                ;
+                clearStage();
                 addBars(array, width / 32, a, true);
                 renderer.render(stage);
                 if (array[j] > array[j + 1]) {
@@ -110,12 +99,10 @@ function bubbleSort(array) {
                     let tmp = array[j];
                     array[j] = array[j + 1];
                     array[j + 1] = tmp;
-                    a.push(j), a.push(j + 1);
+                    a.push(j);
+                    a.push(j + 1);
                     yield delay(115);
-                    for (let k = stage.children.length - 1; k >= 0; k--) {
-                        stage.removeChild(stage.children[k]);
-                    }
-                    ;
+                    clearStage();
                     addBars(array, width / 32, a);
                     renderer.render(stage);
                     yield delay(115);
@@ -123,6 +110,11 @@ function bubbleSort(array) {
             }
         }
     });
+}
+function clearStage() {
+    for (let k = stage.children.length - 1; k >= 0; k--) {
+        stage.removeChild(stage.children[k]);
+    }
 }
 function delay(delayInms) {
     return new Promise(resolve => {
